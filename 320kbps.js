@@ -5,7 +5,8 @@ var cheerio = require('cheerio');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-app.use(express.static(__dirname + '/public')) // public folder
+app.set('port', (process.env.PORT || 5000))
+.use(express.static(__dirname + '/public')) // public folder
 .get('/', function(req, res){
 	res.sendFile(__dirname + '/views/index.html');
 });
@@ -19,7 +20,9 @@ io.sockets.on('connection', function(socket){ // open the socket
 	});
 });
 
-server.listen(8080);
+server.listen(app.get('port'), function() {
+  console.log("Node app is running at localhost:" + app.get('port'))
+});
 
 
 function createLinks(artist, song, pref){ 

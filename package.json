@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/SrgtPepper/320/issues"
   },
-  "homepage": "https://github.com/SrgtPepper/320"
+  "homepage": "https://github.com/SrgtPepper/320",
+  "dependencies": {
+    "express": "~4.9.x",
+    "request": "~2.45.x",
+    "cheerio": "~0.17.x",
+    "socket.io": "~1.1.0"
+  }
 }

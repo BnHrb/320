@@ -1,0 +1,19 @@
+{
+  "name": "320Kbps",
+  "version": "1.0.0",
+  "description": "320 ===",
+  "main": "320kbps.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SrgtPepper/320.git"
+  },
+  "author": "Ben",
+  "license": "none",
+  "bugs": {
+    "url": "https://github.com/SrgtPepper/320/issues"
+  },
+  "homepage": "https://github.com/SrgtPepper/320"
+}

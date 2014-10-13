@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>320 Kbit/s</title>
+        <link rel="stylesheet" type="text/css" href="bootstrap.superhero.css">
+        <script src="socket.io.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <div id="header" style="padding-bottom:2%" class="col-md-10 col-md-offset-1 page-header text-center">
+            <h1 style="font-size: 70px">320 Kbit/s</h1>
+        </div>
+
+        <div id="content" class="col-md-12">
+            <form id="search" action="/" method="post" class="form-inline text-center" role="form">
+                <div class="form-group">
+                    <select class="form-control" id="pref" name="pref">
+                        <option value="320">320 Kb/s</option>
+                        <option value="256">&#8805; 256 Kb/s</option>
+                        <option value="128">&#8805; 128 Kb/s</option>
+                        <option value="0">All</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="artist">Artist</label>
+                    <input class="form-control" type="text" name="artist" id="artist" placeholder="Artist"/>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="song">Song</label>
+                    <input class="form-control" type="text" name="song" id="song" placeholder="Song"/>
+                </div>
+               <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+
+            <div id="results" class="col-md-8 col-md-offset-2" style="padding-top:2%">
+                <table class="table table-hover">
+                    <tbody id="links">
+                        <tr>
+                            <th class="col-md-2">Bitrate</th>
+                            <th class="col-md-2">Length</th>
+                            <th class="col-md-8">Artist - Song</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <script type="text/javascript">
+            var socket = io.connect('http://localhost:8080');
+
+            $('#search').submit(function(){
+                $('#links').empty().append('<tr><th class="col-md-2">Bitrate</th><th class="col-md-2">Length</th><th class="col-md-8">Artist - Song</th></tr>');
+                socket.emit('new_search', $('#artist').val(), $('#song').val(), $('#pref').find(':selected').val());
+                return false;
+            });
+
+            socket.on('new_link', function(link){
+                $('#links').append(link);
+            });
+        </script>
+    </body>
+</html>

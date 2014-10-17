@@ -4,11 +4,16 @@ var request = require('request');
 var cheerio = require('cheerio');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var fs = require('fs');
 
-app.set('port', (process.env.PORT || 5000))
+app.set('port', (process.env.PORT || 1337))
 .use(express.static(__dirname + '/public')) // public folder
 .get('/', function(req, res){
 	res.sendFile(__dirname + '/views/index.html');
+	fs.appendFile('connection.log', req.ip+' | '+req.headers['user-agent']+'\n', function(err){
+		if(err)
+			console.log(err);
+	});
 });
 
 io.sockets.on('connection', function(socket){ // open the socket
@@ -16,6 +21,10 @@ io.sockets.on('connection', function(socket){ // open the socket
 		socket.emit('new_link', link); // send new link
 	});
 	socket.on('new_search', function(artist, song, pref){ // for each new research
+		fs.appendFile('search.log', artist+' | '+song+' | '+pref+'\n', function(err){
+			if(err)
+				console.log(err);
+		});
 		createLinks(artist, song, pref);
 	});
 });
@@ -38,12 +47,16 @@ function createLinks(artist, song, pref){
 	request(url, function(error, response, body) {
 		$ = cheerio.load(body);
 
-		$('#sort a').each(function(){
-			pages = $(this).attr('onclick').split('\'');
-			request.post('http://mrtzcmp3.net/pagechange.php', {form:{hash:pages[3], page:pages[1]}}, function(err, resp, body){
-				page(cheerio.load(body)('.mp3Play'), pref);
+		if($('#sort a').length == 0)
+			app.emit('create_link', '<tr><td colspan="3" class="text-danger text-center">No file found</td></tr>');
+		else {
+			$('#sort a').each(function(){
+				pages = $(this).attr('onclick').split('\'');
+				request.post('http://mrtzcmp3.net/pagechange.php', {form:{hash:pages[3], page:pages[1]}}, function(err, resp, body){
+					page(cheerio.load(body)('.mp3Play'), pref);
+				});
 			});
-		});
+		}
 	});
 }
 
@@ -117,4 +130,5 @@ function replaceAt(string, index, character) {
 function fileSize(rate, sec){
 	return (rate*1024*sec)/8;
 }
+
 

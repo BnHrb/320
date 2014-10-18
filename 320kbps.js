@@ -98,7 +98,12 @@ function bitrate(id, sec, title, time, pref, callback){
 				c = 'text-danger';
 
 			// send the link
-			callback('<tr><td class="'+c+'">'+rate+' Kbit/s</td><td>'+time+'</td><td><a href="http://d.mrtzcmp3.net/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'">'+title+'</td></tr>');
+			callback('<tr>'
+				+'<td class="'+c+'">'+rate+' Kbit/s</td>'
+				+'<td>'+time+'</td>'
+				+'<td><a href="http://d.mrtzcmp3.net/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'">'+title+'</td>'
+				+'<td><audio controls preload="none"><source src="http://d.mrtzcmp3.net/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'" type="audio/mp3">Your browser does not support the audio element.</audio></td>'
+				+'</tr>');
 		}
 	})
 }

@@ -40,7 +40,8 @@
                         <tr>
                             <th class="col-md-2">Bitrate</th>
                             <th class="col-md-2">Length</th>
-                            <th class="col-md-8">Artist - Song</th>
+                            <th class="col-md-6">Artist - Song</th>
+                            <th class="col-md-2"></th>
                         </tr>
                     </tbody>
                 </table>
@@ -52,7 +53,7 @@
             var socket = io.connect('http://serverben.bitnamiapp.com:1337');
 
             $('#search').submit(function(){
-                $('#links').empty().append('<tr><th class="col-md-2">Bitrate</th><th class="col-md-2">Length</th><th class="col-md-8">Artist - Song</th></tr>');
+                $('#links').empty().append('<tr><th class="col-md-2">Bitrate</th><th class="col-md-2">Length</th><th class="col-md-8">Artist - Song</th><th class="col-md-2"></th></tr>');
                 socket.emit('new_search', $('#artist').val(), $('#song').val(), $('#pref').find(':selected').val());
                 return false;
             });

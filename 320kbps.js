@@ -35,7 +35,7 @@ server.listen(app.get('port'), function() {
 
 
 function createLinks(artist, song, pref){ 
-	var url = "http://mrtzcmp3.net/";
+	var url = "http://mrtzc.ch/";
 	if(artist != '')
 		url += artist.replace(/ /g, '_');
 	if(song != '')

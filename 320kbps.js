@@ -6,6 +6,9 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var fs = require('fs');
 
+var domain = 'http://mrtzc.ch';
+var d_domain = 'http://d.mrtzc.ch';
+
 app.set('port', (process.env.PORT || 1337))
 .use(express.static(__dirname + '/public')) // public folder
 .get('/', function(req, res){
@@ -35,11 +38,14 @@ server.listen(app.get('port'), function() {
 
 
 function createLinks(artist, song, pref){ 
-	var url = "http://mrtzc.ch/";
-	if(artist != '')
-		url += artist.replace(/ /g, '_');
+	var url = domain+'/';
+	if(artist != ''){
+		url += artist.replace(/ |'/g, '_');
+		if(song != '')
+			url += '_';
+	}
 	if(song != '')
-		url += '_'+song.replace(/ /g, '_');
+		url += song.replace(/ |'/g, '_');
 	url += '_1s.html';
 
 	//console.log('URL ==> '+url);
@@ -47,12 +53,15 @@ function createLinks(artist, song, pref){
 	request(url, function(error, response, body) {
 		$ = cheerio.load(body);
 
-		if($('#sort a').length == 0)
+		if($('#pagination .mp3Play').length == 0)
 			app.emit('create_link', '<tr><td colspan="3" class="text-danger text-center">No file found</td></tr>');
+		else if($('#sort a').length == 0){
+			page($('#pagination .mp3Play'), pref);
+		}
 		else {
 			$('#sort a').each(function(){
 				pages = $(this).attr('onclick').split('\'');
-				request.post('http://mrtzcmp3.net/pagechange.php', {form:{hash:pages[3], page:pages[1]}}, function(err, resp, body){
+				request.post(domain+'/pagechange.php', {form:{hash:pages[3], page:pages[1]}}, function(err, resp, body){
 					page(cheerio.load(body)('.mp3Play'), pref);
 				});
 			});
@@ -73,13 +82,14 @@ function page(p, pref){
 		title = $(this).find('.mp3Title').attr('title');
 
 		bitrate(id, sec, title, time, pref, function(data){
-			app.emit('create_link', data); // when a new link is created
+			if(data != '')
+				app.emit('create_link', data); // when a new link is created
 		});
 	});
 }
 
 function bitrate(id, sec, title, time, pref, callback){
-	request.post('http://mrtzcmp3.net/bitrateY.php', {form:{a:id}}, function(err, resp, body){
+	request.post(domain+'/bitrateY.php', {form:{a:id}}, function(err, resp, body){
 		if(err)
 			console.log('Error bitrate:'+err);
 		var reg = new RegExp("<[a-z/ ]*>|<[a-z]*>", "g");
@@ -101,10 +111,12 @@ function bitrate(id, sec, title, time, pref, callback){
 			callback('<tr>'
 				+'<td class="'+c+'">'+rate+' Kbit/s</td>'
 				+'<td>'+time+'</td>'
-				+'<td><a href="http://d.mrtzcmp3.net/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'">'+title+'</td>'
-				+'<td><audio controls preload="none"><source src="http://d.mrtzcmp3.net/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'" type="audio/mp3">Your browser does not support the audio element.</audio></td>'
+				+'<td><a href="'+d_domain+'/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'">'+title+'</td>'
+				+'<td><audio controls preload="none"><source src="'+d_domain+'/get3.php?singer='+title.split('-')[0].replace(/ /g, '%20')+'&song='+title.split('-')[1].replace(/ /g, '%20')+'&size=%20'+size+'&ids='+createUrlId(id)+'" type="audio/mp3">Your browser does not support the audio element.</audio></td>'
 				+'</tr>');
 		}
+		else
+			callback('');
 	})
 }
 
